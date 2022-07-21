@@ -1,0 +1,11 @@
+{
+  "tsconfig": "tsconfig.esm.json",
+  "entryPoints": [
+    "src/index.esm.ts"
+  ],
+  "entryPointStrategy": "resolve",
+  "out": "docs",
+  "includeVersion": true,
+  "searchInComments": true,
+  "githubPages": true
+}

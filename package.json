@@ -1,0 +1,77 @@
+{
+  "name": "@minicss/postcss",
+  "version": "1.0.0-alpha.1",
+  "description": "MiniCSS PostCSS Plugin",
+  "license": "MIT",
+  "author": "Ardalan Amini <ardalanamini22@gmail.com> (https://ardalanamini.com/)",
+  "homepage": "https://github.com/minicss/postcss#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/minicss/postcss.git"
+  },
+  "bugs": {
+    "url": "https://github.com/minicss/postcss/issues"
+  },
+  "keywords": [
+    "min",
+    "mini",
+    "minify",
+    "css",
+    "minicss",
+    "postcss",
+    "plugin"
+  ],
+  "sideEffects": false,
+  "main": "build/cjs/index.cjs.js",
+  "types": "build/cjs/index.cjs.d.ts",
+  "module": "build/esm/index.esm.js",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./build/esm/index.esm.d.ts",
+        "default": "./build/esm/index.esm.js"
+      },
+      "default": {
+        "types": "./build/cjs/index.cjs.d.ts",
+        "default": "./build/cjs/index.cjs.js"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "build": "scripts/pre-build.sh && npm run build:cjs && npm run build:esm && scripts/post-build.sh",
+    "build:cjs": "tsc",
+    "build:cjs:watch": "npm run build:cjs -- --watch",
+    "build:esm": "tsc -p tsconfig.esm.json",
+    "build:esm:watch": "npm run build:esm -- --watch",
+    "lint": "eslint src __tests__ scripts",
+    "lint:fix": "npm run lint -- --fix",
+    "docs": "typedoc",
+    "benchmark": "ts-node scripts/benchmark.ts",
+    "test": "node --no-compilation-cache --expose-gc node_modules/jest/bin/jest --logHeapUsage",
+    "test:coverage": "npm test -- --coverage",
+    "test:ci": "npm run test:coverage -- --ci --verbose --no-cache"
+  },
+  "peerDependencies": {
+    "@minicss/core": "^1.0.0-alpha.1",
+    "postcss": "^8.4.14"
+  },
+  "devDependencies": {
+    "@minicss/core": "^1.0.0-alpha.1",
+    "@types/jest": "^28.1.6",
+    "@types/node": "^18.0.6",
+    "@typescript-eslint/eslint-plugin": "^5.30.7",
+    "@typescript-eslint/parser": "^5.30.7",
+    "eslint": "^8.20.0",
+    "eslint-config-noir": "^1.2.1",
+    "eslint-import-resolver-typescript": "^3.3.0",
+    "eslint-plugin-import": "^2.26.0",
+    "jest": "^28.1.3",
+    "postcss": "^8.4.14",
+    "table": "^6.8.0",
+    "ts-jest": "^28.0.7",
+    "ts-node": "^10.9.1",
+    "typedoc": "^0.23.8",
+    "typescript": "^4.7.4"
+  }
+}
