@@ -16,7 +16,7 @@ const files = readdirSync(DIR).filter(file => file.endsWith(".css"));
 const stream = createStream({
   columnDefault: {
     alignment: "center",
-    width    : 30,
+    width    : 25,
   },
   columnCount: 4,
 });
@@ -48,7 +48,7 @@ async function benchmark(): Promise<void> {
     const renamedSize = Buffer.byteLength(result.css);
 
     stream.write([
-      file,
+      file.replace(/\.css$/, ""),
       `${ (originalSize / KB).toLocaleString("en-US", { maximumFractionDigits: 3 }) } KB`,
       `${ (renamedSize / KB).toLocaleString("en-US", { maximumFractionDigits: 3 }) } KB`,
       ((originalSize - renamedSize) / originalSize).toLocaleString("en-US", {

@@ -20,6 +20,7 @@ MiniCSS PostCSS Plugin
 - [Installation](#installation)
 - [Usage](#usage)
   - [Options](#options)
+- [Benchmarks](#benchmarks)
 - [Versioning](#versioning)
 - [Authors](#authors)
 - [License](#license)
@@ -52,6 +53,20 @@ module.exports = {
 | outputMapFile | string  |    -    | Where to write the output map to be used outside the plugin |
 
 > `*` means the options is required.
+
+## Benchmarks
+
+First build the project:
+
+```shell
+npm run build
+```
+
+Then run the command below:
+
+```shell
+npm run benchmark
+```
 
 ## Versioning
 
