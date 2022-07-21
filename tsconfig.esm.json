@@ -1,0 +1,9 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "tsBuildInfoFile": "./.esm.tsbuildinfo",
+    "module": "ESNext",
+    "outDir": "./build/esm/"
+  },
+  "exclude": ["src/index.cjs.ts"]
+}
