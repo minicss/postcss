@@ -3,6 +3,7 @@ import { readdirSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import postcss from "postcss";
 import { createStream } from "table";
+// eslint-disable-next-line import/no-unresolved
 import minicss from "..";
 
 const KB = 1024;
