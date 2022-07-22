@@ -45,12 +45,13 @@ module.exports = {
 
 ### Options
 
-|     Name      |  Type   | Default |                         Description                         |
-|:-------------:|:-------:|:-------:|:-----------------------------------------------------------:|
-|    classes    | boolean | `true`  |            Should the plugin rename css classes             |
-|      ids      | boolean | `true`  |              Should the plugin rename css ids               |
-|   variables   | boolean | `true`  |           Should the plugin rename css variables            |
-| outputMapFile | string  |    -    | Where to write the output map to be used outside the plugin |
+|     Name      |  Type   | Default |                                                                                                               Description                                                                                                               |
+|:-------------:|:-------:|:-------:|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|
+|    classes    | boolean | `true`  |                                                                                                  Should the plugin rename css classes                                                                                                   |
+|      ids      | boolean | `true`  |                                                                                                    Should the plugin rename css ids                                                                                                     |
+|   keyframes   | boolean | `true`  | Should the plugin rename css keyframes & animation names (in case of css `animation`, name should be either first parameter or last parameter if it starts with duration (a digit). if the name is a css variable then this won't work) |
+|   variables   | boolean | `true`  |                                                                                                 Should the plugin rename css variables                                                                                                  |
+| outputMapFile | string  |    -    |                                                                                       Where to write the output map to be used outside the plugin                                                                                       |
 
 > `*` means the options is required.
 
