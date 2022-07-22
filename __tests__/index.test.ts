@@ -40,6 +40,27 @@ it("should not rename css ids", async () => {
   expect(result.css).toBe("#red { color: red; } #blue { color: blue; }");
 });
 
+it("should rename css keyframes", async () => {
+  const result = await postcss([minicss()])
+    .process(
+      "@keyframes color-change { from { color: blue; } to { color: red; } } .foo { animation-name: none; }",
+      { from: undefined },
+    );
+
+  expect(result.css).toBe("@keyframes _ { from { color: blue; } to { color: red; } } ._ { animation-name: none; }");
+});
+
+it("should not rename css keyframes", async () => {
+  const result = await postcss([minicss({ keyframes: false })])
+    .process(
+      "@keyframes color-change { from { color: blue; } to { color: red; } } .foo { animation-name: none; }",
+      { from: undefined },
+    );
+
+  expect(result.css)
+    .toBe("@keyframes color-change { from { color: blue; } to { color: red; } } ._ { animation-name: none; }");
+});
+
 it("should rename css variables", async () => {
   const result = await postcss([minicss()])
     .process(":root { --red: red; } .red { color: var(--red); }", { from: undefined });
@@ -59,13 +80,18 @@ it("should output the name map results at the provided file path", async () => {
 
   const result = await postcss([minicss({ outputMapFile })])
     .process(
-      ":root { --red: red; } .red { color: var(--red); } .blue { color: blue; }"
-      + " #red { color: red; } #blue { color: blue; }",
+      ":root { --red: red; }"
+      + " @keyframes color-change { from { color: blue; } to { color: red; } }"
+      + " .red { color: var(--red); animation: none; } .blue { color: blue; animation: 1s color-change; }"
+      + " #red { color: red; animation: color-change 1s; } #blue { color: blue; animation-name: color-change; }",
       { from: undefined },
     );
 
   expect(result.css)
-    .toBe(":root { --_: red; } ._ { color: var(--_); } .a { color: blue; } #_ { color: red; } #a { color: blue; }");
+    .toBe(":root { --_: red; }"
+      + " @keyframes _ { from { color: blue; } to { color: red; } }"
+      + " ._ { color: var(--_); animation: none; } .a { color: blue; animation: 1s _; }"
+      + " #_ { color: red; animation: _ 1s; } #a { color: blue; animation-name: _; }");
 
   expect(existsSync(outputMapFile)).toBe(true);
 
@@ -79,6 +105,9 @@ it("should output the name map results at the provided file path", async () => {
     ids: {
       red : "_",
       blue: "a",
+    },
+    keyframes: {
+      "color-change": "_",
     },
     variables: {
       red: "_",

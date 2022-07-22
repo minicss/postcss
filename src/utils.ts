@@ -1,6 +1,7 @@
 import { MiniCSS } from "@minicss/core";
-import { Declaration, Node, Rule } from "postcss";
+import { AtRule, Declaration, Node, Rule } from "postcss";
 import {
+  ANIMATION_NAMES,
   CLASS_SELECTOR_REGEX,
   ID_SELECTOR_REGEX,
   PostCSSProcessorT,
@@ -17,16 +18,56 @@ export function processIds(miniCSS: MiniCSS, rule: Rule): void {
   rule.selector = rule.selector.replace(ID_SELECTOR_REGEX, (_, id) => `#${ miniCSS.id(id) }`);
 }
 
-export function processClassesAndIds(miniCSS: MiniCSS, rule: Rule): void {
+export function processRules(miniCSS: MiniCSS, rule: Rule): void {
   processClasses(miniCSS, rule);
 
   processIds(miniCSS, rule);
 }
 
 export function processVariables(miniCSS: MiniCSS, decl: Declaration): void {
-  if (decl.variable) decl.prop = `--${ miniCSS.variable(decl.prop.substring(2)) }`;
+  const { variable, prop, value } = decl;
 
-  decl.value = decl.value.replace(PROPERTY_REGEX, (_, property) => `var(--${ miniCSS.variable(property) })`);
+  if (variable) decl.prop = `--${ miniCSS.variable(prop.substring(2)) }`;
+
+  decl.value = value.replace(PROPERTY_REGEX, (_, property) => `var(--${ miniCSS.variable(property) })`);
+}
+
+export function processKeyframes(miniCSS: MiniCSS, atRule: AtRule): void {
+  if (atRule.name.endsWith("keyframes")) atRule.params = miniCSS.keyframe(atRule.params);
+}
+
+export function processKeyframesUsages(miniCSS: MiniCSS, decl: Declaration): void {
+  const { prop, value } = decl;
+
+  if (prop.endsWith("animation-name")) {
+    if (ANIMATION_NAMES.includes(value) || value.startsWith("var(--")) return;
+
+    decl.value = miniCSS.keyframe(value);
+
+    return;
+  }
+
+  if (!prop.endsWith("animation")) return;
+
+  const words = value.split(" ");
+
+  let name = words[0];
+  let pattern = `^${ name }`;
+
+  if (/^\d/.test(name)) {
+    name = words[words.length - 1];
+    pattern = `${ name }$`;
+  }
+
+  if (ANIMATION_NAMES.includes(name) || name.startsWith("var(--")) return;
+
+  decl.value = value.replace(new RegExp(pattern), miniCSS.keyframe(name));
+}
+
+export function processDeclarations(miniCSS: MiniCSS, decl: Declaration): void {
+  processVariables(miniCSS, decl);
+
+  processKeyframesUsages(miniCSS, decl);
 }
 
 export function processor<T extends Node>(miniCSS: MiniCSS, fn: ProcessorT<T>): PostCSSProcessorT<T> {
