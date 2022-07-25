@@ -1,9 +1,10 @@
 import { writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
-import { MiniCSS } from "@minicss/core";
+import { ATTRIBUTE, MiniCSS } from "@minicss/core";
 import { Plugin } from "postcss";
 import { OptionsI, ProcessorsT } from "./constants.js";
 import {
+  processAttributeSelectors,
   processClasses,
   processDeclarations,
   processIds,
@@ -12,6 +13,7 @@ import {
   processor,
   processRules,
   processVariables,
+  replaceAttributeSelectors,
 } from "./utils.js";
 
 function minicss(options: OptionsI = {}): Plugin {
@@ -20,9 +22,19 @@ function minicss(options: OptionsI = {}): Plugin {
   return {
     postcssPlugin: "minicss",
     prepare(): ProcessorsT {
-      const processors: ProcessorsT = {};
-
       const miniCSS = (new MiniCSS);
+
+      const processors: ProcessorsT = {
+        Once(root) {
+          root.walkRules(rule => processAttributeSelectors(miniCSS, rule));
+
+          miniCSS.optimize();
+
+          if (classes && ids) root.walkRules(rule => replaceAttributeSelectors(miniCSS, rule));
+          else if (classes) root.walkRules(rule => replaceAttributeSelectors(miniCSS, rule, ATTRIBUTE.CLASS));
+          else if (ids) root.walkRules(rule => replaceAttributeSelectors(miniCSS, rule, ATTRIBUTE.ID));
+        },
+      };
 
       if (classes && ids) processors.Rule = processor(miniCSS, processRules);
       else if (classes) processors.Rule = processor(miniCSS, processClasses);

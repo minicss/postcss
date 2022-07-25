@@ -142,3 +142,10 @@ it("should output the name map results at the provided file path", async () => {
     },
   });
 });
+
+it("should rename css attribute selectors", async () => {
+  const result = await postcss([minicss()])
+    .process("*[class|=col] { color: red; } .col {} .col-1 {}", { from: undefined });
+
+  expect(result.css).toBe("*[class^=_-] { color: red; } ._-a {} ._-b {}");
+});

@@ -1,7 +1,8 @@
-import { MiniCSS } from "@minicss/core";
+import { ATTRIBUTE, MiniCSS } from "@minicss/core";
 import { AtRule, Declaration, Node, Rule } from "postcss";
 import {
   ANIMATION_NAMES,
+  ATTRIBUTE_SELECTOR_REGEX,
   CLASS_SELECTOR_REGEX,
   ID_SELECTOR_REGEX,
   PostCSSProcessorT,
@@ -9,6 +10,66 @@ import {
   ProcessorT,
   VARIABLE_USAGE_REGEX,
 } from "./constants.js";
+
+export function processAttributeSelectors(miniCSS: MiniCSS, rule: Rule): void {
+  rule.selector = rule.selector.replaceAll(ATTRIBUTE_SELECTOR_REGEX, (_, ...match) => {
+    // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+    const { attribute, operator, value, caseSensitivity } = match[7];
+
+    try {
+      miniCSS.addAttributeSelector({
+        attribute,
+        operator,
+        value,
+        caseSensitivity,
+      });
+    } catch (error) {
+      /* istanbul ignore next */
+      rule.error((error as Error).message);
+    }
+
+    return _;
+  });
+}
+
+export function replaceAttributeSelectors(miniCSS: MiniCSS, rule: Rule, attr?: ATTRIBUTE): void {
+  rule.selector = rule.selector
+    .replaceAll(ATTRIBUTE_SELECTOR_REGEX, (_, ...match) => {
+      // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+      const { attribute, operator, quotes, value, caseSensitivity } = match[7];
+
+      /* istanbul ignore next */
+      if (attr && attribute !== attr) return _;
+
+      try {
+        const result = miniCSS.attributeSelector({
+          attribute,
+          operator,
+          value,
+          caseSensitivity,
+        });
+
+        return `[${
+          attribute
+        }${
+          result.operator
+        }${
+          quotes
+        }${
+          result.value
+        }${
+          quotes
+        }${
+          /* istanbul ignore next */
+          caseSensitivity ? ` ${ caseSensitivity }` : ""
+        }]`;
+      } catch (error) /* istanbul ignore next */ {
+        rule.error((error as Error).message);
+
+        return _;
+      }
+    });
+}
 
 export function processClasses(miniCSS: MiniCSS, rule: Rule): void {
   rule.selector = rule.selector.replaceAll(CLASS_SELECTOR_REGEX, (_, className) => `.${ miniCSS.class(className) }`);
