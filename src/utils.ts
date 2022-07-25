@@ -1,21 +1,82 @@
-import { MiniCSS } from "@minicss/core";
+import { ATTRIBUTE, MiniCSS } from "@minicss/core";
 import { AtRule, Declaration, Node, Rule } from "postcss";
 import {
   ANIMATION_NAMES,
+  ATTRIBUTE_SELECTOR_REGEX,
   CLASS_SELECTOR_REGEX,
   ID_SELECTOR_REGEX,
   PostCSSProcessorT,
   PROCESSED,
   ProcessorT,
-  PROPERTY_REGEX,
+  VARIABLE_USAGE_REGEX,
 } from "./constants.js";
 
+export function processAttributeSelectors(miniCSS: MiniCSS, rule: Rule): void {
+  rule.selector = rule.selector.replaceAll(ATTRIBUTE_SELECTOR_REGEX, (_, ...match) => {
+    // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+    const { attribute, operator, value, caseSensitivity } = match[7];
+
+    try {
+      miniCSS.addAttributeSelector({
+        attribute,
+        operator,
+        value,
+        caseSensitivity,
+      });
+    } catch (error) {
+      /* istanbul ignore next */
+      rule.error((error as Error).message);
+    }
+
+    return _;
+  });
+}
+
+export function replaceAttributeSelectors(miniCSS: MiniCSS, rule: Rule, attr?: ATTRIBUTE): void {
+  rule.selector = rule.selector
+    .replaceAll(ATTRIBUTE_SELECTOR_REGEX, (_, ...match) => {
+      // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+      const { attribute, operator, quotes, value, caseSensitivity } = match[7];
+
+      /* istanbul ignore next */
+      if (attr && attribute !== attr) return _;
+
+      try {
+        const result = miniCSS.attributeSelector({
+          attribute,
+          operator,
+          value,
+          caseSensitivity,
+        });
+
+        return `[${
+          attribute
+        }${
+          result.operator
+        }${
+          quotes
+        }${
+          result.value
+        }${
+          quotes
+        }${
+          /* istanbul ignore next */
+          caseSensitivity ? ` ${ caseSensitivity }` : ""
+        }]`;
+      } catch (error) /* istanbul ignore next */ {
+        rule.error((error as Error).message);
+
+        return _;
+      }
+    });
+}
+
 export function processClasses(miniCSS: MiniCSS, rule: Rule): void {
-  rule.selector = rule.selector.replace(CLASS_SELECTOR_REGEX, (_, className) => `.${ miniCSS.class(className) }`);
+  rule.selector = rule.selector.replaceAll(CLASS_SELECTOR_REGEX, (_, className) => `.${ miniCSS.class(className) }`);
 }
 
 export function processIds(miniCSS: MiniCSS, rule: Rule): void {
-  rule.selector = rule.selector.replace(ID_SELECTOR_REGEX, (_, id) => `#${ miniCSS.id(id) }`);
+  rule.selector = rule.selector.replaceAll(ID_SELECTOR_REGEX, (_, id) => `#${ miniCSS.id(id) }`);
 }
 
 export function processRules(miniCSS: MiniCSS, rule: Rule): void {
@@ -29,7 +90,7 @@ export function processVariables(miniCSS: MiniCSS, decl: Declaration): void {
 
   if (variable) decl.prop = `--${ miniCSS.variable(prop.substring(2)) }`;
 
-  decl.value = value.replace(PROPERTY_REGEX, (_, property) => `var(--${ miniCSS.variable(property) })`);
+  decl.value = value.replaceAll(VARIABLE_USAGE_REGEX, (_, property) => `var(--${ miniCSS.variable(property) })`);
 }
 
 export function processKeyframes(miniCSS: MiniCSS, atRule: AtRule): void {
