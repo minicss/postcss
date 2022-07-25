@@ -17,9 +17,9 @@ const files = readdirSync(DIR).filter(file => file.endsWith(".css"));
 const stream = createStream({
   columnDefault: {
     alignment: "center",
-    width    : 25,
+    width    : 20,
   },
-  columnCount: 4,
+  columnCount: 5,
 });
 
 stream.write([
@@ -27,7 +27,10 @@ stream.write([
   "Original Size",
   "Renamed Size",
   "Improvement",
+  "Overall Improvement",
 ]);
+
+const FILE_SIZE = new Map<string, number>;
 
 async function benchmark(): Promise<void> {
   for (const file of files) {
@@ -36,6 +39,10 @@ async function benchmark(): Promise<void> {
     const css = readFileSync(from, ENCODING);
 
     const originalSize = Buffer.byteLength(css);
+
+    const key = file.replace(/(?:\.min)?\.css$/, "");
+
+    if (!file.endsWith(".min.css")) FILE_SIZE.set(key, originalSize);
 
     // eslint-disable-next-line no-await-in-loop
     const result = await postcss([minicss()]).process(
@@ -48,11 +55,18 @@ async function benchmark(): Promise<void> {
 
     const renamedSize = Buffer.byteLength(result.css);
 
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const baseSize = FILE_SIZE.get(key)!;
+
     stream.write([
       file.replace(/\.css$/, ""),
       `${ (originalSize / KB).toLocaleString("en-US", { maximumFractionDigits: 3 }) } KB`,
       `${ (renamedSize / KB).toLocaleString("en-US", { maximumFractionDigits: 3 }) } KB`,
       ((originalSize - renamedSize) / originalSize).toLocaleString("en-US", {
+        style                : "percent",
+        maximumFractionDigits: 3,
+      }),
+      ((baseSize - renamedSize) / baseSize).toLocaleString("en-US", {
         style                : "percent",
         maximumFractionDigits: 3,
       }),
