@@ -99,18 +99,46 @@ it("should output the name map results at the provided file path", async () => {
 
   expect(JSON.parse(nameMap)).toEqual({
     classes: {
-      red : "_",
-      blue: "a",
+      last: "a",
+      map : {
+        red : "_",
+        blue: "a",
+      },
+      selectors: {
+        start  : [],
+        contain: [],
+        end    : [],
+      },
     },
     ids: {
-      red : "_",
-      blue: "a",
+      last: "a",
+      map : {
+        red : "_",
+        blue: "a",
+      },
+      selectors: {
+        start  : [],
+        contain: [],
+        end    : [],
+      },
     },
     keyframes: {
-      "color-change": "_",
+      last     : "_",
+      map      : { "color-change": "_" },
+      selectors: {
+        start  : [],
+        contain: [],
+        end    : [],
+      },
     },
     variables: {
-      red: "_",
+      last     : "_",
+      map      : { red: "_" },
+      selectors: {
+        start  : [],
+        contain: [],
+        end    : [],
+      },
     },
   });
 });

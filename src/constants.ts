@@ -1,14 +1,15 @@
 import { MiniCSS } from "@minicss/core";
 import { Helpers, Plugin } from "postcss";
 
-export const NAME_REGEX = /(?<name>-?(?:[_a-zA-Z]|\\[.:/\d])+(?:[-_a-zA-Z\d]|\\[.:/])*)/gm;
+export const NAME_REGEX = /(?<name>-?(?:[_a-zA-Z]|\\[.:/\d])+(?:[-_a-zA-Z\d]|\\[.:/])*)/g;
 
-export const CLASS_SELECTOR_REGEX = new RegExp(`\\.${ NAME_REGEX.source }`, "gm");
+export const CLASS_SELECTOR_REGEX = new RegExp(`\\.${ NAME_REGEX.source }`, "g");
 
-export const ID_SELECTOR_REGEX = new RegExp(`#${ NAME_REGEX.source }`, "gm");
+export const ID_SELECTOR_REGEX = new RegExp(`#${ NAME_REGEX.source }`, "g");
 
-export const VARIABLE_REGEX = /-{2}(?<variable>-?[_a-zA-Z]+[-_a-zA-Z\d]*)/gm;
-export const PROPERTY_REGEX = new RegExp(`var\\(${ VARIABLE_REGEX.source }\\)`, "gm");
+export const VARIABLE_REGEX = new RegExp(`-{2}${ NAME_REGEX.source }`, "g");
+
+export const VARIABLE_USAGE_REGEX = new RegExp(`var\\(${ VARIABLE_REGEX.source }\\)`, "g");
 
 export const ANIMATION_NAMES = ["none", "initial", "inherit"];
 

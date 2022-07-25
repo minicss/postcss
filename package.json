@@ -23,6 +23,9 @@
     "postcss-plugin"
   ],
   "sideEffects": false,
+  "engines": {
+    "node": ">= 16.0.0"
+  },
   "main": "build/cjs/index.cjs.js",
   "types": "build/cjs/index.cjs.d.ts",
   "module": "build/esm/index.esm.js",

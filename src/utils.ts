@@ -7,15 +7,15 @@ import {
   PostCSSProcessorT,
   PROCESSED,
   ProcessorT,
-  PROPERTY_REGEX,
+  VARIABLE_USAGE_REGEX,
 } from "./constants.js";
 
 export function processClasses(miniCSS: MiniCSS, rule: Rule): void {
-  rule.selector = rule.selector.replace(CLASS_SELECTOR_REGEX, (_, className) => `.${ miniCSS.class(className) }`);
+  rule.selector = rule.selector.replaceAll(CLASS_SELECTOR_REGEX, (_, className) => `.${ miniCSS.class(className) }`);
 }
 
 export function processIds(miniCSS: MiniCSS, rule: Rule): void {
-  rule.selector = rule.selector.replace(ID_SELECTOR_REGEX, (_, id) => `#${ miniCSS.id(id) }`);
+  rule.selector = rule.selector.replaceAll(ID_SELECTOR_REGEX, (_, id) => `#${ miniCSS.id(id) }`);
 }
 
 export function processRules(miniCSS: MiniCSS, rule: Rule): void {
@@ -29,7 +29,7 @@ export function processVariables(miniCSS: MiniCSS, decl: Declaration): void {
 
   if (variable) decl.prop = `--${ miniCSS.variable(prop.substring(2)) }`;
 
-  decl.value = value.replace(PROPERTY_REGEX, (_, property) => `var(--${ miniCSS.variable(property) })`);
+  decl.value = value.replaceAll(VARIABLE_USAGE_REGEX, (_, property) => `var(--${ miniCSS.variable(property) })`);
 }
 
 export function processKeyframes(miniCSS: MiniCSS, atRule: AtRule): void {
