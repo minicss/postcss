@@ -1,6 +1,6 @@
 {
   "name": "@minicss/postcss",
-  "version": "1.0.0-alpha.2",
+  "version": "1.0.0-alpha.3",
   "description": "MiniCSS PostCSS Plugin",
   "license": "MIT",
   "author": "Ardalan Amini <ardalanamini22@gmail.com> (https://ardalanamini.com/)",
