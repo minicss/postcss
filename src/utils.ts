@@ -72,11 +72,11 @@ export function replaceAttributeSelectors(miniCSS: MiniCSS, rule: Rule, attr?: A
 }
 
 export function processClasses(miniCSS: MiniCSS, rule: Rule): void {
-  rule.selector = rule.selector.replaceAll(CLASS_SELECTOR_REGEX, (_, className) => `.${ miniCSS.class(className) }`);
+  rule.selector = rule.selector.replaceAll(CLASS_SELECTOR_REGEX, (_, className) => `.${ miniCSS.classes().rename(className) }`);
 }
 
 export function processIds(miniCSS: MiniCSS, rule: Rule): void {
-  rule.selector = rule.selector.replaceAll(ID_SELECTOR_REGEX, (_, id) => `#${ miniCSS.id(id) }`);
+  rule.selector = rule.selector.replaceAll(ID_SELECTOR_REGEX, (_, id) => `#${ miniCSS.ids().rename(id) }`);
 }
 
 export function processRules(miniCSS: MiniCSS, rule: Rule): void {
@@ -88,13 +88,13 @@ export function processRules(miniCSS: MiniCSS, rule: Rule): void {
 export function processVariables(miniCSS: MiniCSS, decl: Declaration): void {
   const { variable, prop, value } = decl;
 
-  if (variable) decl.prop = `--${ miniCSS.variable(prop.substring(2)) }`;
+  if (variable) decl.prop = `--${ miniCSS.variables().rename(prop.substring(2)) }`;
 
-  decl.value = value.replaceAll(VARIABLE_USAGE_REGEX, (_, property) => `var(--${ miniCSS.variable(property) })`);
+  decl.value = value.replaceAll(VARIABLE_USAGE_REGEX, (_, property) => `var(--${ miniCSS.variables().rename(property) })`);
 }
 
 export function processKeyframes(miniCSS: MiniCSS, atRule: AtRule): void {
-  if (atRule.name.endsWith("keyframes")) atRule.params = miniCSS.keyframe(atRule.params);
+  if (atRule.name.endsWith("keyframes")) atRule.params = miniCSS.keyframes().rename(atRule.params);
 }
 
 export function processKeyframesUsages(miniCSS: MiniCSS, decl: Declaration): void {
@@ -103,7 +103,7 @@ export function processKeyframesUsages(miniCSS: MiniCSS, decl: Declaration): voi
   if (prop.endsWith("animation-name")) {
     if (ANIMATION_NAMES.includes(value) || value.startsWith("var(--")) return;
 
-    decl.value = miniCSS.keyframe(value);
+    decl.value = miniCSS.keyframes().rename(value);
 
     return;
   }
@@ -122,7 +122,7 @@ export function processKeyframesUsages(miniCSS: MiniCSS, decl: Declaration): voi
 
   if (ANIMATION_NAMES.includes(name) || name.startsWith("var(--")) return;
 
-  decl.value = value.replace(new RegExp(pattern), miniCSS.keyframe(name));
+  decl.value = value.replace(new RegExp(pattern), miniCSS.keyframes().rename(name));
 }
 
 export function processDeclarations(miniCSS: MiniCSS, decl: Declaration): void {

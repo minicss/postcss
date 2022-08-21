@@ -6,3 +6,5 @@ parserOptions:
   project: ./tsconfig.eslint.json
   ecmaVersion: latest
   sourceType: module
+rules:
+  import/extensions: off
