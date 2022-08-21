@@ -1,0 +1,15 @@
+.idea/
+.vscode/
+.github/
+__tests__/
+benchmarks/
+build/*.tsbuildinfo
+coverage/
+docs/
+scripts/
+src/
+.eslintrc.yml
+.gitattributes
+jest.config.js
+tsconfig*.json
+typedoc.json
