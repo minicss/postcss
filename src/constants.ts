@@ -1,7 +1,7 @@
 import { MiniCSS } from "@minicss/core";
 import { Helpers, Plugin } from "postcss";
 
-export const NAME_REGEX = /-?(?:[_a-zA-Z]|\\[.:/\d])+(?:[-_a-zA-Z\d]|\\[.:/])*/g;
+export const NAME_REGEX = /-?(?:[_a-zA-Z]|\\[\\#^$.:*+?()[\]{}|/\d])+(?:[-_a-zA-Z\d]|\\[\\#^$.:*+?()[\]{}|/])*/g;
 
 export const CLASS_SELECTOR_REGEX = new RegExp(`\\.(${ NAME_REGEX.source })`, "g");
 

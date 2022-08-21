@@ -14,7 +14,7 @@ it("should set postcss to be true", () => {
 
 it("should rename css classes", async () => {
   const result = await postcss([minicss()])
-    .process(".red { color: red; } .blue { color: blue; }", { from: undefined });
+    .process(".red { color: red; } .active\\:color\\[\\#maybe\\.blue\\] { color: blue; }", { from: undefined });
 
   expect(result.css).toBe("._ { color: red; } .a { color: blue; }");
 });
